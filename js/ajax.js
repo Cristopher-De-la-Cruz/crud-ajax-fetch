@@ -1,4 +1,4 @@
-$(() => {
+$(function () {
   $('#task-result').hide();
   fetchTasks();
   let edit = false;

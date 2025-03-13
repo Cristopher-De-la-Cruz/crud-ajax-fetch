@@ -1,0 +1,15 @@
+{
+    "name": "fanve/php",
+    "autoload": {
+        "psr-4": {
+            "Fanve\\Php\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Cristopher De la Cruz",
+            "email": "cristopher.delacruz.1555@email.com"
+        }
+    ],
+    "require": {}
+}

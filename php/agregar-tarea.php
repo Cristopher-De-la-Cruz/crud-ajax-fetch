@@ -13,5 +13,6 @@ if(isset($_POST["name"])){
         die("Hubo un error en la consulta". mysqli_error($connecction));
     }
 
-    echo "Tarea agregada!";
+    echo '{"message": "Tarea agregada!"}';
+
 }

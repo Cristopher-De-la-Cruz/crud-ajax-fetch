@@ -13,6 +13,6 @@ if(isset($_POST["id"])){
         die("Hubo un error en la consulta". mysqli_error($connecction));
     }
 
-    echo "La tarea ha sido eliminada!";
+    echo '{"message": "La tarea ha sido eliminada!"}';
 
 }

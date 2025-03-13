@@ -5,7 +5,7 @@ include("database.php");
 $search = $_POST["search"];
 
 if(!empty($search)) {
-    $query = "SELECT * FROM tareas WHERE name LIKE '$search%'";
+    $query = "SELECT * FROM tareas WHERE name LIKE '%$search%'";
     $result = mysqli_query($connecction, $query);
 
     if(!$result) {
