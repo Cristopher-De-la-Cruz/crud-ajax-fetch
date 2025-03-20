@@ -1,33 +1,22 @@
-$(function () {
+$(() => {
   $('#task-result').hide();
   fetchTasks();
+  console.log('Fetch');
+
   let edit = false;
 
+  let downloadpdf = $('#downloadpdf');
+
+  let search = $('#search').val();
+
   $('#search').keyup(() => {
-    if ($('#search').val()) {
-      let search = $('#search').val();
-      let formData = new URLSearchParams();
-      formData.append('search', search);
-      fetch('php/buscar-tarea.php', {
-        method: 'POST',
-        body: formData,
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
-      })
-        .then(resp => {
-          if (!resp.ok) throw new Error('Error en la solicitud');
-          return resp.json();
-        })
-        .then(response => {
-          let template = '';
-          response.forEach(task => {
-            template += `<li class="task-item">${task.name}</li>`;
-          });
-          $('#task-result').show();
-          $('#container').html(template);
-        })
-        .catch(error => console.error('Error:', error));
+    search = $('#search').val();
+    fetchTasks(search);
+    if (search) {
+      downloadpdf.attr('href', 'php/downloadPDF.php?search=' + search);
+      // downloadpdf.attr('href', 'php/downloadPDF.php?search=' + encodeURIComponent(search));
+    } else {
+      downloadpdf.attr('href', 'php/downloadPDF.php');
     }
   });
 
@@ -58,7 +47,7 @@ $(function () {
     })
       .then((response) => {
         if (!response.error) {
-          fetchTasks();
+          fetchTasks(search);
           $('#task-form').trigger('reset');
         }
       })
@@ -67,8 +56,18 @@ $(function () {
       })
   });
 
-  function fetchTasks() {
-    fetch('php/listar-tareas.php')
+  function fetchTasks(search = '') {
+    // let form = new URLSearchParams();
+    // form.append('search', search);
+    fetch('php/listar-tareas.php?search=' + search,
+      // {
+      //   method: 'POST',
+      //   body: form,
+      //   headers: {
+      //     'Content-Type': 'application/x-www-form-urlencoded'
+      //   }
+      // }
+    )
       .then(resp => resp.json())
       .then(response => {
         let template = ``;
@@ -79,8 +78,8 @@ $(function () {
                             <td>${task.name}</td>
                             <td>${task.description}</td>
                             <td>
-                                <button class="btn btn-danger task-delete">Eliminar</button>
-                                <button class="btn btn-warning task-item">Modificar</button>
+                                <button id="${task.id}" class="btn btn-danger task-delete">Eliminar</button>
+                                <button id="${task.id}" class="btn btn-warning task-item">Modificar</button>
                             </td>
                         </tr>
                         `;
@@ -90,10 +89,9 @@ $(function () {
       })
   }
 
-  $(document).on('click', '.task-delete', () => {
+  $(document).on('click', '.task-delete', function () {
     if (confirm('¿Seguroski que quieres eliminar esa tarea?')) {
-      const element = $(this)[0].activeElement.parentElement.parentElement;
-      const id = $(element).attr('taskId');
+      const id = $(this).attr('id');
       let form = new URLSearchParams();
       form.append('id', id);
       fetch('php/eliminar-tarea.php', {
@@ -105,7 +103,7 @@ $(function () {
       }).then((resp) => resp.json())
         .then((response) => {
           if (!response.error) {
-            fetchTasks();
+            fetchTasks(search);
           }
         })
         .catch((error) => {
@@ -114,11 +112,10 @@ $(function () {
     }
   });
 
-  $(document).on('click', '.task-item', () => {
-    const element = $(this)[0].activeElement.parentElement.parentElement;
-    const id = $(element).attr('taskId');
+  $(document).on('click', '.task-item', function () {
+    const id = $(this).attr('id');
     let url = 'php/obtener-una-tarea.php';
-    
+
     let form = new URLSearchParams();
     form.append('id', id);
     fetch(url, {
@@ -129,7 +126,7 @@ $(function () {
       }
     }).then(resp => resp.json())
       .then(response => {
-        if(!response.error){
+        if (!response.error) {
           $('#name').val(response.name);
           $('#description').val(response.description);
           $('#taskId').val(response.id);

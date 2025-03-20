@@ -1,6 +1,9 @@
 <?php
 require('fpdf/fpdf.php');
 
+$search = isset($_GET["search"]) ? trim($_GET["search"]) : '';
+// echo $search;
+
 $pdf = new FPDF();
 $pdf->AddPage();
 $pdf->SetFont('Arial', 'B', 22);
@@ -35,7 +38,18 @@ $pdf->Ln();
 
 // DATOS
 $pdf->SetFont('Times', '', 10);
-$data = file_get_contents('http://localhost/crud-ajax-fetch/php/listar-tareas.php');
+
+$dataUrl = "http://localhost/crud-ajax-fetch/php/listar-tareas.php?search=".$search;
+// $options = [
+//     "http" => [
+//         "method"  => "POST",
+//         "header"  => "Content-Type: application/x-www-form-urlencoded",
+//         "content" => "search=$search"
+//     ]
+// ];
+// $context = stream_context_create($options);
+// $data = file_get_contents($dataUrl, false, $context);
+$data = file_get_contents($dataUrl);
 $tareas = json_decode($data, true);
 
 foreach($tareas as $tarea)

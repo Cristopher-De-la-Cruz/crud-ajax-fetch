@@ -1,29 +1,24 @@
-$(function () {
+$(() => {
   $('#task-result').hide();
   fetchTasks();
+  console.log('Ajax');
+  
   let edit = false;
 
+  let downloadpdf = $('#downloadpdf');
+
+  let search = $('#search').val();
+
   $('#search').keyup(() => {
-    if ($('#search').val()) {
-      let search = $('#search').val();
-      $.ajax({
-        url: 'php/buscar-tarea.php',
-        data: { search },
-        type: 'POST',
-        success: function (response) {
-          if (!response.error) {
-            let tasks = JSON.parse(response);
-            let template = ``;
-            tasks.forEach((task) => {
-              template += `<li class="task-item">${task.name}</li>`;
-            });
-            $('#task-result').show();
-            $('#container').html(template);
-          }
-        },
-      });
-    }
+      search = $('#search').val();
+      fetchTasks(search);
+      if(search) {
+        downloadpdf.attr('href', 'php/downloadPDF.php?search=' + encodeURIComponent(search));
+      } else {
+        downloadpdf.attr('href', 'php/downloadPDF.php');
+      }
   });
+
 
   $('#task-form').submit((e) => {
     e.preventDefault();
@@ -41,16 +36,17 @@ $(function () {
       type: 'POST',
       success: function (response) {
         if (!response.error) {
-          fetchTasks();
+          fetchTasks(search);
           $('#task-form').trigger('reset');
         }
       },
     });
   });
 
-  function fetchTasks() {
+  function fetchTasks(search = '') {
     $.ajax({
-      url: 'php/listar-tareas.php',
+      url: 'php/listar-tareas.php?search=' + search,
+      // data: { search },
       type: 'GET',
       success: function (response) {
         const tasks = JSON.parse(response);
@@ -62,8 +58,8 @@ $(function () {
                             <td>${task.name}</td>
                             <td>${task.description}</td>
                             <td>
-                                <button class="btn btn-danger task-delete">Eliminar</button>
-                                <button class="btn btn-warning task-item">Modificar</button>
+                                <button id="${task.id}" class="btn btn-danger task-delete">Eliminar</button>
+                                <button id="${task.id}" class="btn btn-warning task-item">Modificar</button>
                             </td>
                         </tr>
                         `;
@@ -74,19 +70,17 @@ $(function () {
     });
   }
 
-  $(document).on('click', '.task-delete', () => {
+  $(document).on('click', '.task-delete', function() {
     if (confirm('¿Seguroski que quieres eliminar esa tarea?')) {
-      const element = $(this)[0].activeElement.parentElement.parentElement;
-      const id = $(element).attr('taskId');
+      const id = $(this).attr('id');
       $.post('php/eliminar-tarea.php', { id }, () => {
-        fetchTasks();
+        fetchTasks(search);
       });
     }
   });
 
-  $(document).on('click', '.task-item', () => {
-    const element = $(this)[0].activeElement.parentElement.parentElement;
-    const id = $(element).attr('taskId');
+  $(document).on('click', '.task-item', function() {
+    const id = $(this).attr('id');
     let url = 'php/obtener-una-tarea.php';
     $.ajax({
       url,

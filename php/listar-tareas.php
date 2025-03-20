@@ -2,7 +2,12 @@
 
 include("database.php");
 
-$query = "SELECT * FROM tareas";
+$search = '';
+// if(isset($_POST["search"])) $search = $_POST["search"];
+if(isset($_GET["search"])) $search = $_GET["search"];
+
+
+$query = "SELECT * FROM tareas WHERE name LIKE '%$search%'";
 $result = mysqli_query($connecction, $query);
 
 if(!$result) {
@@ -18,6 +23,5 @@ while($row = mysqli_fetch_array($result)){
         "description"=>$row["description"]
     );
 }
-
 $jsonstring = json_encode($json);
 echo $jsonstring;

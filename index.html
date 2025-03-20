@@ -24,15 +24,14 @@
         <a href="index.html" class="navbar-brand fw-bold text-light"
           >APP DE TAREAS</a
         >
-        <form class="d-flex">
+        <div class="d-flex">
           <input
             type="search"
             id="search"
             placeholder="Buscar"
             class="form-control me-2"
           />
-          <button type="submit" class="btn btn-warning">Buscar</button>
-        </form>
+        </div>
       </div>
     </nav>
 
@@ -69,12 +68,6 @@
           </div>
         </div>
         <div class="col-md-7">
-          <div class="card my-4" id="task-result">
-            <div class="card-body">
-              <ul id="container"></ul>
-            </div>
-          </div>
-
           <table class="table table-bordered table-sm">
             <thead>
               <tr>
@@ -82,7 +75,7 @@
                 <td class="text-center">Nombre</td>
                 <td class="text-center">Descripción</td>
                 <td class="text-center d-flex gap-2">
-                  <a href="php/downloadPDF.php" target="_blank" class="w-100 btn btn-outline-danger">
+                  <a id="downloadpdf" href="php/downloadPDF.php" target="_blank" class="w-100 btn btn-outline-danger">
                     Descargar PDF <i class="fa fa-file-pdf"></i>
                   </a>
                   <a href="php/downloadExcel.php" target="_blank" class="w-100 btn btn-outline-success">
